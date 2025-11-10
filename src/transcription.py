@@ -89,10 +89,10 @@ class WhisperLocalTranscriber:
     def transcribe(self, audio: np.ndarray, sample_rate: int) -> TranscriptionResult:
         # Whisper expects float32 numpy array at 16000 Hz; resample handled internally.
         original_dtype = audio.dtype
-        if audio.ndim > 1:
-            audio = audio.mean(axis=1).astype(original_dtype, copy=False)
+        if audio.ndim > 1: #If X > 1
+            audio = audio.mean(axis=1).astype(original_dtype, copy=False) #average across channels X
         else:
-            audio = audio.squeeze() #Collapse dimensions of audio array (N, X) to 1D (N,) - X is the number of channels
+            audio = audio.squeeze() #Collapse dimensions of audio array (N, 1) to 1D (N,) - 1 is the number of channels
         result = self._model.transcribe(audio, fp16=False)
         text = result.get("text", "").strip()
         if not text:

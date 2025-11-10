@@ -28,6 +28,7 @@ class SummaryResult:
 
 def summarize_with_ollama(text: str, model: Optional[str] = None, url: Optional[str] = None) -> SummaryResult:
     """Send the transcript to a local Ollama server for summarization."""
+
     target_model = model or os.getenv("OLLAMA_MODEL", "llama3")
     endpoint = url or os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate") #post to OLLAMA_URL, or default
 
@@ -42,7 +43,7 @@ def summarize_with_ollama(text: str, model: Optional[str] = None, url: Optional[
         "2. After the bullets, write 'Answer:' followed by a short answer to any question in the transcript. If there is no question, write 'Answer: N/A'.\n"
         "3. Do not ask for additional context. Never refuse. Never repeat the instructions.\n"
         "Transcript:\n"
-        f"{cleaned_text}\n\n"
+        f"{cleaned_text}\n\n" #insert text from transcription
         "Summary:\n- "
     )
 

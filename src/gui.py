@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import datetime
 import threading
 import tkinter as tk
-from tkinter import messagebox
+from pathlib import Path
+from tkinter import filedialog, messagebox
 
 from audio_capture import AudioCaptureConfig, StreamingMicrophoneRecorder
 from config import load_environment
@@ -25,7 +27,7 @@ class AudioGuiApp:
 
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
-        self.root.title("Mic to Tokens")
+        self.root.title("Iota")
 
         self.recorder = StreamingMicrophoneRecorder(AudioCaptureConfig())
 
@@ -38,6 +40,9 @@ class AudioGuiApp:
         self.summarize_var = tk.BooleanVar(value=False)
         self.ollama_model_var = tk.StringVar(value="llama3")
         self.ollama_url_var = tk.StringVar(value="http://localhost:11434/api/generate")
+        
+        self.save_output_var = tk.BooleanVar(value=False)
+        self.save_directory = tk.StringVar(value=str(Path.cwd() / "outputs"))
 
         self._build_ui()
 
@@ -127,6 +132,22 @@ class AudioGuiApp:
         )
         summarize_frame.columnconfigure(1, weight=1)
 
+        save_frame = tk.LabelFrame(self.root, text="Save Output")
+        save_frame.pack(fill="x", **padding)
+        tk.Checkbutton(
+            save_frame,
+            text="Save transcript and terminal output to file",
+            variable=self.save_output_var,
+        ).grid(row=0, column=0, columnspan=2, sticky="w", padx=5, pady=2)
+        tk.Label(save_frame, text="Output directory:").grid(row=1, column=0, sticky="w")
+        tk.Entry(save_frame, textvariable=self.save_directory).grid(
+            row=1, column=1, sticky="ew", padx=5
+        )
+        tk.Button(save_frame, text="Browse...", command=self._choose_directory).grid(
+            row=1, column=2, sticky="ew", padx=5
+        )
+        save_frame.columnconfigure(1, weight=1)
+
     def start_recording(self) -> None:
         if self.recorder.is_running():
             return
@@ -185,12 +206,12 @@ class AudioGuiApp:
         )
         token_result = tokenizer.encode(transcription.text)
 
-        print("=== Transcription Result ===")
-        print(f"Text: {transcription.text}")
+        output_lines = []
+        output_lines.append("=== Transcription Result ===")
+        output_lines.append(f"Text: {transcription.text}")
         if transcription.language:
-            print(f"Language: {transcription.language}")
-        print(f"Token count ({token_result.encoding_name}): {token_result.count()}")
-        #print(f"Tokens: {token_result.tokens}")
+            output_lines.append(f"Language: {transcription.language}")
+        output_lines.append(f"Token count ({token_result.encoding_name}): {token_result.count()}")
 
         if self.summarize_var.get():
             try:
@@ -202,9 +223,17 @@ class AudioGuiApp:
             except SummarizationError as exc:
                 self._update_status("Summary failed.")
                 print(f"Summarization failed: {exc}")
+                output_lines.append(f"Summarization failed: {exc}")
             else:
-                print(f"Summary ({summary.model}):\n{summary.summary}")
-                print(f"Answer: {summary.answer}")
+                output_lines.append(f"Summary ({summary.model}):\n{summary.summary}")
+                output_lines.append(f"Answer: {summary.answer}")
+
+        # Print to terminal
+        for line in output_lines:
+            print(line)
+
+        if self.save_output_var.get():
+            self._persist_output(transcription.text, output_lines)
 
         self._update_status("Done.")
         self._set_exit_enabled(True)
@@ -234,6 +263,28 @@ class AudioGuiApp:
 
     def _exit_app(self) -> None:
         self.root.destroy()
+
+    def _choose_directory(self) -> None:
+        directory = filedialog.askdirectory(initialdir=self.save_directory.get() or str(Path.cwd()))
+        if directory:
+            self.save_directory.set(directory)
+
+    def _persist_output(self, transcript_text: str, lines: list[str]) -> None:
+        """
+        Writes output to txt file. Saves transcript and terminal output to file.
+        """
+        directory = Path(self.save_directory.get()).expanduser()
+        directory.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        output_file = directory / f"transcript_{timestamp}.txt"
+
+        content = "\n".join(lines)
+        try:
+            output_file.write_text(content + "\n", encoding="utf-8")
+        except OSError as exc:
+            messagebox.showerror("Save Error", f"Failed to write output file: {exc}")
+        else:
+            print(f"Saved output to {output_file}")
 
 
 def main() -> None:
