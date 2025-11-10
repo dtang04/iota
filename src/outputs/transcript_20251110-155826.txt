@@ -1,0 +1,10 @@
+=== Transcription Result ===
+Text: We call this SPMD, and I just want to, even though it has a four-letter acronym just like these ones, it's not how you build a machine. It's how you program a machine. So, a probing model is supposed to have a model. And then, can...
+Language: en
+Token count (o200k_base): 58
+Summary (llama3):
+Summary:
+- • The speaker discusses SPMD (Scalable Parallel Machine Design) and its differences from traditional machine building.
+- • A probing model is mentioned as having a model component.
+- • The conversation trails off with the phrase "And then, can..."
+Answer: N/A

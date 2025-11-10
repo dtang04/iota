@@ -1,0 +1,10 @@
+=== Transcription Result ===
+Text: Part of the idea was maybe this is too complicated. Right. And expensive. Maybe it's wasteful to have everyone in these be a foam multi-photosist as opposed to have it sort of this being the instruction part and this being essentially
+Language: en
+Token count (o200k_base): 48
+Summary (llama3):
+Summary:
+- • The idea may be too complicated or expensive.
+- • Having multiple photographers might be considered wasteful.
+- • A possible solution is to separate instruction from photography.
+Answer: N/A

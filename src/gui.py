@@ -227,13 +227,18 @@ class AudioGuiApp:
             else:
                 output_lines.append(f"Summary ({summary.model}):\n{summary.summary}")
                 output_lines.append(f"Answer: {summary.answer}")
+                pass
 
-        # Print to terminal
         for line in output_lines:
             print(line)
 
         if self.save_output_var.get():
-            self._persist_output(transcription.text, output_lines)
+            self.root.after(
+                0,
+                self._prompt_save_dialog,
+                transcription.text,
+                "\n".join(output_lines),
+            )
 
         self._update_status("Done.")
         self._set_exit_enabled(True)
@@ -269,10 +274,18 @@ class AudioGuiApp:
         if directory:
             self.save_directory.set(directory)
 
+    def _prompt_save_dialog(self, transcript_text: str, content: str) -> None:
+        response = messagebox.askyesno(
+            "Save Transcript",
+            "Save this transcription and summary to file?",
+            parent=self.root,
+        )
+        if response:
+            lines = content.strip().splitlines()
+            self._persist_output(transcript_text, lines)
+
     def _persist_output(self, transcript_text: str, lines: list[str]) -> None:
-        """
-        Writes output to txt file. Saves transcript and terminal output to file.
-        """
+        """Write transcript and derived output to a timestamped text file."""
         directory = Path(self.save_directory.get()).expanduser()
         directory.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")

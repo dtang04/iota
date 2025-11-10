@@ -1,0 +1,13 @@
+=== Transcription Result ===
+Text: more explicitly into having things to be parallel. And we had a construction level parallel. Where we actually start multiple instructions at a time. Instead of starting them one at a time, we just start from potentially two or four at the same time. And that allowed us to have even more computation, having similar things. So the next step here is what we call task level parallelism. And that's sort of what we can think about when we talk about parallel. There's a parallel computing course that you can take. In that course, you learn how to write programs that are designed to be run with multiple parts of your program running simultaneously. What we'll do in this class is talk generally about how you would structure your programs for parallelism, or task parallelism. And then we're going to talk about different computer architectures, parts of computer architectures that help support running things at the same time. Now, what we'll talk about parallel computing.
+Language: en
+Token count (o200k_base): 186
+Summary (llama3):
+Summary:
+- Here is the summary and
+Answer: Summary:
+• The concept of parallel processing was discussed, with a focus on construction-level parallelism where multiple instructions are started simultaneously.
+• Task level parallelism was introduced as the next step in parallel processing, involving running multiple parts of a program simultaneously.
+• The importance of structuring programs for parallelism and understanding computer architectures that support parallel computing were highlighted.
+
+Answer:

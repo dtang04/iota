@@ -1,0 +1,10 @@
+=== Transcription Result ===
+Text: And that was, of course, 35 years later, that actually had enough computing to see substantially the price of the cells coming out. Okay, so this machine, so it brought past an instruction. Every cycle. So every cycle that comes out, these all get the same instruction and then processing all of that works on local data. So think of a tile of that image. You can see how you can write a program that would do that image filter. Right? You basically tell each one to look at each of the nine elements and then figure out what the middle of the mean element is.
+Language: en
+Token count (o200k_base): 121
+Summary (llama3):
+Summary:
+- • The speaker discusses a machine that took 35 years to develop enough computing power to accurately predict cell prices.
+- • The machine processes data in cycles, with each cycle receiving an instruction and processing local data.
+- • The speaker uses the example of image filtering to illustrate how a program can be written to process data.
+Answer: N/A

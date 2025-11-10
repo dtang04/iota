@@ -1,0 +1,4 @@
+=== Transcription Result ===
+Text: Every pixel is the same, and you're doing all the work you're doing. But let's imagine that, for example, the amount of work is different depending on the value of the image. Right? Let's say you're doing your detecting objects. And some of the squares, some of the pictures, part of the pictures have objects and some don't. You're detecting cars. And so some cars and some don't. That means that some of the squares don't have much work to do, and maybe one has two cars in it, or something like that. That is less of a problem if the squares are really big. So as they get small, then there's a much greater chance that some of the squares have very little work. And so that's another reason why that effects feet of falls off as we go. As we come to a very clear. Okay. So the question is...
+Language: en
+Token count (o200k_base): 174
