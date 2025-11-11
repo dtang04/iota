@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iota - AI Assistant</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Iota - AI Assistant</h1>
+        <p class="tagline">
+          Record audio, transcribe with Whisper, tokenize, and summarize using a local LLM.
+        </p>
+      </header>
+
+      <section class="controls">
+        <fieldset class="provider">
+          <legend>Transcription Provider</legend>
+          <label>
+            <input type="radio" name="provider" value="openai" checked />
+            OpenAI Whisper
+          </label>
+          <label>
+            <input type="radio" name="provider" value="whisper-local" />
+            Local Whisper
+          </label>
+        </fieldset>
+
+        <div class="model-inputs">
+          <label>
+            OpenAI Model
+            <input id="openaiModel" type="text" placeholder="gpt-4o-mini-transcribe" />
+          </label>
+          <label>
+            Local Whisper Model
+            <input id="whisperModel" type="text" placeholder="base" />
+          </label>
+          <label>
+            Tokenizer Model
+            <input id="tokenizerModel" type="text" placeholder="gpt-4o-mini" />
+          </label>
+          <label>
+            Encoding Override
+            <input id="encodingName" type="text" placeholder="cl100k_base" />
+          </label>
+        </div>
+
+        <label class="checkbox">
+          <input id="shouldSummarize" type="checkbox" />
+          Generate summary with local Ollama
+        </label>
+        <div class="model-inputs">
+          <label>
+            Ollama Model
+            <input id="ollamaModel" type="text" placeholder="llama3" />
+          </label>
+          <label>
+            Ollama Endpoint
+            <input id="ollamaUrl" type="text" placeholder="http://localhost:11434/api/generate" />
+          </label>
+        </div>
+      </section>
+
+      <section class="record-section">
+        <button id="recordButton" class="record idle" type="button" aria-label="Record">
+          <span class="record-indicator"></span>
+        </button>
+        <span id="recordStatus" class="record-status">Tap to start recording</span>
+      </section>
+
+      <section class="results hide" id="resultsPanel">
+        <h2>Results</h2>
+        <div class="result-grid">
+          <div>
+            <h3>Transcript</h3>
+            <p id="transcriptText" class="mono"></p>
+            <p id="languageInfo" class="meta"></p>
+          </div>
+          <div>
+            <h3>Tokens</h3>
+            <p id="tokenCount" class="meta"></p>
+            <details>
+              <summary>Show token IDs</summary>
+              <pre id="tokenList"></pre>
+            </details>
+          </div>
+          <div id="summaryBlock" class="hide">
+            <h3>Summary</h3>
+            <p id="summaryText"></p>
+            <p id="answerText" class="meta"></p>
+          </div>
+        </div>
+        <button id="downloadBtn" class="secondary" type="button">Download .txt</button>
+      </section>
+
+      <section class="logs">
+        <h2>Status</h2>
+        <pre id="logOutput"></pre>
+      </section>
+    </main>
+
+    <script src="/static/app.js" type="module"></script>
+  </body>
+</html>
+

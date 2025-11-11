@@ -1,8 +1,12 @@
 numpy>=1.26
 sounddevice>=0.4.6
 soundfile>=0.12
-tiktoken>=0.5.1
-openai>=1.13.0
+tiktoken>=0.5.1 #tokenization
+openai>=1.13.0 #transcription
 python-dotenv>=1.0.1
-requests>=2.32.0
+requests>=2.32.0 #posting payload to Ollama server
+openai-whisper>=20231117 #local transcription (optional)
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
 

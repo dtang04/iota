@@ -30,6 +30,7 @@ class AudioGuiApp:
         self.root.title("Iota")
 
         self.recorder = StreamingMicrophoneRecorder(AudioCaptureConfig())
+        self.is_recording = False
 
         self.provider_var = tk.StringVar(value="openai")
         self.openai_model_var = tk.StringVar(value="")
@@ -148,6 +149,12 @@ class AudioGuiApp:
         )
         save_frame.columnconfigure(1, weight=1)
 
+    def toggle_recording(self) -> None:
+        if not self.is_recording:
+            self.start_recording()
+        else:
+            self.stop_recording()
+
     def start_recording(self) -> None:
         if self.recorder.is_running():
             return
@@ -157,7 +164,8 @@ class AudioGuiApp:
             messagebox.showerror("Recording Error", str(exc))
             return
 
-        self.status_var.set("Recording... press stop when finished.")
+        self.is_recording = True
+        self.status_var.set("Recording... tap to stop.")
         self.record_button.config(state="disabled")
         self.stop_button.config(state="normal")
         self._set_exit_enabled(False)
@@ -171,6 +179,7 @@ class AudioGuiApp:
             messagebox.showerror("Recording Error", str(exc))
             return
 
+        self.is_recording = False
         self.record_button.config(state="normal")
         self.stop_button.config(state="disabled")
         if audio.size == 0:

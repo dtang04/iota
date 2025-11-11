@@ -2,6 +2,10 @@
 
 This project provides the initial scaffolding for an application that records audio from a microphone, transcribes the speech to text, and converts that text into tokens ready for use with a Large Language Model (LLM).
 
+Current Models:
+- Transcription: OpenAI
+- LLM - OLlama 3
+
 ### 1. Environment Setup
 
 - Install system dependencies:
@@ -23,6 +27,7 @@ This project provides the initial scaffolding for an application that records au
   OPENAI_MODEL=gpt-4o-mini-transcribe  # optional override
   ```
   The runner automatically loads this file via `python-dotenv`.
+  If you are only using the local Whisper model, you can omit `OPENAI_API_KEY`.
 
 ### 3. Usage
 
@@ -40,12 +45,34 @@ python src/gui.py
 
 Speak while “Recording...” is displayed, then press “Stop Recording.” The transcript and tokens will print in the terminal.
 
+Optional GUI features:
+
+- Enable “Generate summary after transcription” to send the transcript to a local Ollama model for summarization and question answering.
+- Enable “Save transcript and terminal output…” to write each run to a timestamped text file in your chosen directory (default `outputs/`).
+
 To generate local summaries (and have questions auto-answered) via [Ollama](https://ollama.ai), install and run an Ollama model (e.g. `ollama run llama3`), then either:
 
 - CLI: `python src/app.py --duration 5 --summarize --ollama-model llama3`
 - GUI: enable “Generate summary after transcription” and specify the model/endpoint if different from defaults.
 
-### 4. Project Structure
+### 4. Web App
+
+Serve a FastAPI backend and static web client to control the pipeline from a browser:
+
+```bash
+uvicorn web_server:app --reload
+```
+
+Open [http://localhost:8000/](http://localhost:8000/) to:
+
+- Choose transcription provider (OpenAI or local Whisper)
+- Configure models/encodings and optional Ollama summarization
+- Record directly in the browser via MediaRecorder
+- Download transcripts and summaries as `.txt`
+
+When deploying to Render, you only need to set `OPENAI_API_KEY` in the dashboard if you plan to use the OpenAI provider; otherwise leave it unset and select Local Whisper in the UI.
+
+### 5. Project Structure
 
 ```
 src/
@@ -53,15 +80,16 @@ src/
   app.py
   audio_capture.py
   config.py
+  web_server.py
   transcription.py
   tokenization.py
   summarization.py
   gui.py
+web/
+  index.html
+  styles.css
+  app.js
 ```
 
-### 5. Next Steps
-
-- Implement streaming audio capture and partial transcription.
-- Add UI (CLI prompts or web interface) to visualize transcripts and tokens.
-- Integrate with downstream LLM request pipeline. 
+### 6. Next Steps
 
