@@ -1,6 +1,6 @@
-## Mic-to-Token Pipeline Prototype
+## Mic-to-Token Pipeline
 
-This project provides the initial scaffolding for an application that records audio from a microphone, transcribes the speech to text, and converts that text into tokens ready for use with a Large Language Model (LLM).
+This project provides the scaffolding for an application that records audio from a microphone, transcribes the speech to text, and converts that text into tokens ready for use with a Large Language Model (LLM).
 
 Current Models:
 - Transcription: Local Whisper (via openai-whisper)
