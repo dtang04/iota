@@ -16,6 +16,16 @@ let audioChunks = [];
 let isRecording = false;
 let lastResultText = "";
 
+function getInputValue(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : "";
+}
+
+function getCheckboxChecked(id) {
+  const el = document.getElementById(id);
+  return el ? el.checked : false;
+}
+
 function appendLog(message) {
   const timestamp = new Date().toLocaleTimeString();
   logOutput.textContent += `[${timestamp}] ${message}\n`;
@@ -45,17 +55,15 @@ async function uploadRecording(blob) {
     const formData = new FormData();
     formData.append("file", blob, "recording.webm");
 
-    const provider = document.querySelector("input[name='provider']:checked").value;
-    formData.append("provider", provider);
-    formData.append("openai_model", document.getElementById("openaiModel").value.trim());
-    formData.append("whisper_model", document.getElementById("whisperModel").value.trim());
-    formData.append("tokenizer_model", document.getElementById("tokenizerModel").value.trim());
-    formData.append("encoding_name", document.getElementById("encodingName").value.trim());
+    formData.append("provider", "whisper-local");
+    formData.append("whisper_model", getInputValue("whisperModel") || "base");
+    formData.append("tokenizer_model", getInputValue("tokenizerModel"));
+    formData.append("encoding_name", getInputValue("encodingName"));
 
-    const shouldSummarize = document.getElementById("shouldSummarize").checked;
+    const shouldSummarize = getCheckboxChecked("shouldSummarize");
     formData.append("summarize", shouldSummarize);
-    formData.append("ollama_model", document.getElementById("ollamaModel").value.trim());
-    formData.append("ollama_url", document.getElementById("ollamaUrl").value.trim());
+    formData.append("ollama_model", getInputValue("ollamaModel") || "llama3");
+    formData.append("ollama_url", getInputValue("ollamaUrl") || "http://localhost:11434/api/generate");
 
     appendLog("Uploading audio...");
     const response = await fetch("/transcribe", {

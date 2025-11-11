@@ -10,13 +10,7 @@ from pathlib import Path
 from audio_capture import AudioCaptureConfig, MicrophoneRecorder
 from config import load_environment
 from tokenization import LLMTokenizer
-from transcription import (
-    OpenAIWhisperTranscriber,
-    SpeechToTextError,
-    SpeechToTextService,
-    TranscriptionResult,
-    WhisperLocalTranscriber,
-)
+from transcription import SpeechToTextError, SpeechToTextService, WhisperLocalTranscriber
 from summarization import SummarizationError, summarize_with_ollama
 
 load_environment()
@@ -33,8 +27,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--duration", type=float, default=5.0, help="Recording duration in seconds")
     parser.add_argument("--sample-rate", type=int, default=16_000, help="Audio sample rate")
     parser.add_argument("--channels", type=int, default=1, help="Number of audio channels")
-    parser.add_argument("--provider", choices=("openai", "whisper-local"), default="openai", help="Transcription backend")
-    parser.add_argument("--openai-model", type=str, default=None, help="Override OpenAI Whisper model id")
     parser.add_argument("--whisper-model", type=str, default="base", help="Local Whisper model name")
     parser.add_argument("--tokenizer-model", type=str, default=None, help="LLM model name for tokenization")
     parser.add_argument("--encoding", type=str, default=None, help="Explicit tiktoken encoding name")
@@ -52,7 +44,7 @@ def main() -> int:
         sample_rate=args.sample_rate,
         channels=args.channels,
     )
-    recorder = MicrophoneRecorder(config) #instansiates Micropohone Recorder
+    recorder = MicrophoneRecorder(config)
 
     logger.info("Recording audio for %.2f seconds ...", args.duration)
     audio = recorder.record(args.duration)
@@ -62,7 +54,7 @@ def main() -> int:
         recorder.save_wav(audio, args.output_wav)
         logger.info("Saved audio to %s", Path(args.output_wav).resolve())
 
-    transcriber = build_transcriber(args, config.sample_rate)
+    transcriber = build_transcriber(args)
     try:
         transcription = transcriber.transcribe(audio, config.sample_rate)
     except SpeechToTextError as exc:
@@ -95,12 +87,8 @@ def main() -> int:
     return 0
 
 
-def build_transcriber(args: argparse.Namespace, sample_rate: int) -> SpeechToTextService:
-    if args.provider == "openai":
-        return OpenAIWhisperTranscriber(model=args.openai_model)
-    if args.provider == "whisper-local":
-        return WhisperLocalTranscriber(model_name=args.whisper_model)
-    raise ValueError(f"Unsupported provider: {args.provider}")
+def build_transcriber(args: argparse.Namespace) -> SpeechToTextService:
+    return WhisperLocalTranscriber(model_name=args.whisper_model)
 
 
 if __name__ == "__main__":

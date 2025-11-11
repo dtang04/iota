@@ -3,8 +3,8 @@
 This project provides the initial scaffolding for an application that records audio from a microphone, transcribes the speech to text, and converts that text into tokens ready for use with a Large Language Model (LLM).
 
 Current Models:
-- Transcription: OpenAI
-- LLM - OLlama 3
+- Transcription: Local Whisper (via openai-whisper)
+- LLM - Ollama 3
 
 ### 1. Environment Setup
 
@@ -21,13 +21,7 @@ Current Models:
 
 ### 2. Configuration
 
-- Create a `.env` file in the project root with at least:
-  ```
-  OPENAI_API_KEY=sk-...
-  OPENAI_MODEL=gpt-4o-mini-transcribe  # optional override
-  ```
-  The runner automatically loads this file via `python-dotenv`.
-  If you are only using the local Whisper model, you can omit `OPENAI_API_KEY`.
+- Create a `.env` file in the project root if you need other environment values (no OpenAI key required).
 
 ### 3. Usage
 
@@ -50,10 +44,7 @@ Optional GUI features:
 - Enable “Generate summary after transcription” to send the transcript to a local Ollama model for summarization and question answering.
 - Enable “Save transcript and terminal output…” to write each run to a timestamped text file in your chosen directory (default `outputs/`).
 
-To generate local summaries (and have questions auto-answered) via [Ollama](https://ollama.ai), install and run an Ollama model (e.g. `ollama run llama3`), then either:
-
-- CLI: `python src/app.py --duration 5 --summarize --ollama-model llama3`
-- GUI: enable “Generate summary after transcription” and specify the model/endpoint if different from defaults.
+To generate local summaries (and have questions auto-answered) via [Ollama](https://ollama.ai), install and run an Ollama model (e.g. `ollama run llama3`), then enable summarization in the UI or CLI options.
 
 ### 4. Web App
 
@@ -65,12 +56,11 @@ uvicorn web_server:app --reload
 
 Open [http://localhost:8000/](http://localhost:8000/) to:
 
-- Choose transcription provider (OpenAI or local Whisper)
+- Record locally with Whisper
 - Configure models/encodings and optional Ollama summarization
-- Record directly in the browser via MediaRecorder
 - Download transcripts and summaries as `.txt`
 
-When deploying to Render, you only need to set `OPENAI_API_KEY` in the dashboard if you plan to use the OpenAI provider; otherwise leave it unset and select Local Whisper in the UI.
+When deploying to Render, no OpenAI API key is needed because transcription runs locally.
 
 ### 5. Project Structure
 

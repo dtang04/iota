@@ -3,40 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Iota - AI Assistant</title>
+    <title>Iota Mic-to-Token</title>
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
     <main class="container">
       <header>
-        <h1>Iota - AI Assistant</h1>
+        <h1>Iota Mic-to-Token</h1>
         <p class="tagline">
-          Record audio, transcribe with Whisper, tokenize, and summarize using a local LLM.
+          Record audio, transcribe locally with Whisper, tokenize, and summarize using a local LLM.
         </p>
       </header>
 
       <section class="controls">
         <fieldset class="provider">
-          <legend>Transcription Provider</legend>
+          <legend>Transcription Settings</legend>
           <label>
-            <input type="radio" name="provider" value="openai" checked />
-            OpenAI Whisper
-          </label>
-          <label>
-            <input type="radio" name="provider" value="whisper-local" />
-            Local Whisper
+            Whisper Model
+            <input id="whisperModel" type="text" placeholder="base" value="base" />
           </label>
         </fieldset>
 
         <div class="model-inputs">
-          <label>
-            OpenAI Model
-            <input id="openaiModel" type="text" placeholder="gpt-4o-mini-transcribe" />
-          </label>
-          <label>
-            Local Whisper Model
-            <input id="whisperModel" type="text" placeholder="base" />
-          </label>
           <label>
             Tokenizer Model
             <input id="tokenizerModel" type="text" placeholder="gpt-4o-mini" />
@@ -54,11 +42,11 @@
         <div class="model-inputs">
           <label>
             Ollama Model
-            <input id="ollamaModel" type="text" placeholder="llama3" />
+            <input id="ollamaModel" type="text" placeholder="llama3" value="llama3" />
           </label>
           <label>
             Ollama Endpoint
-            <input id="ollamaUrl" type="text" placeholder="http://localhost:11434/api/generate" />
+            <input id="ollamaUrl" type="text" placeholder="http://localhost:11434/api/generate" value="http://localhost:11434/api/generate" />
           </label>
         </div>
       </section>

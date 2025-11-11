@@ -6,7 +6,4 @@ services:
     region: oregon
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn web_server:app --host 0.0.0.0 --port $PORT
-    envVars:
-      - key: OPENAI_API_KEY
-        sync: false  # set only if you plan to use OpenAI Whisper
 

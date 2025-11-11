@@ -16,11 +16,7 @@ from pydantic import BaseModel
 from src.config import load_environment
 from src.summarization import SummarizationError, summarize_with_ollama
 from src.tokenization import LLMTokenizer
-from src.transcription import (
-    OpenAIWhisperTranscriber,
-    SpeechToTextError,
-    WhisperLocalTranscriber,
-)
+from src.transcription import SpeechToTextError, WhisperLocalTranscriber
 
 load_environment()
 
@@ -62,7 +58,7 @@ def _load_audio_bytes(data: bytes) -> tuple[np.ndarray, int]:
     return audio, int(sample_rate)
 
 
-def _convert_with_ffmpeg(data: bytes) -> bytes:
+def _convert_with_ffmpeg(data: bytes) -> bytes: #convert audio to 16000 Hz mono WAV
     try:
         process = subprocess.run(
             [
@@ -112,8 +108,7 @@ async def index() -> FileResponse:
 @app.post("/transcribe", response_model=TranscriptionResponse) #transcribe endpoint
 async def transcribe_audio(
     file: UploadFile = File(...),
-    provider: str = Form("openai"),
-    openai_model: Optional[str] = Form(None),
+    provider: str = Form("whisper-local"),
     whisper_model: Optional[str] = Form("base"),
     tokenizer_model: Optional[str] = Form(None),
     encoding_name: Optional[str] = Form(None),
@@ -125,7 +120,7 @@ async def transcribe_audio(
     audio, sample_rate = _load_audio_bytes(audio_bytes)
 
     try:
-        transcriber = _select_transcriber(provider, openai_model, whisper_model)
+        transcriber = WhisperLocalTranscriber(model_name=whisper_model or "base")
         transcription = transcriber.transcribe(audio, sample_rate)
     except SpeechToTextError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc

@@ -180,6 +180,12 @@ details pre {
   display: none !important;
 }
 
+.provider {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+}
+
 @media (max-width: 560px) {
   .model-inputs {
     grid-template-columns: 1fr;

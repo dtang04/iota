@@ -12,12 +12,7 @@ from audio_capture import AudioCaptureConfig, StreamingMicrophoneRecorder
 from config import load_environment
 from tokenization import LLMTokenizer
 from summarization import SummarizationError, summarize_with_ollama
-from transcription import (
-    OpenAIWhisperTranscriber,
-    SpeechToTextError,
-    SpeechToTextService,
-    WhisperLocalTranscriber,
-)
+from transcription import SpeechToTextError, SpeechToTextService, WhisperLocalTranscriber
 
 load_environment()
 
@@ -32,8 +27,6 @@ class AudioGuiApp:
         self.recorder = StreamingMicrophoneRecorder(AudioCaptureConfig())
         self.is_recording = False
 
-        self.provider_var = tk.StringVar(value="openai")
-        self.openai_model_var = tk.StringVar(value="")
         self.whisper_model_var = tk.StringVar(value="base")
         self.tokenizer_model_var = tk.StringVar(value="")
         self.encoding_var = tk.StringVar(value="")
@@ -41,7 +34,7 @@ class AudioGuiApp:
         self.summarize_var = tk.BooleanVar(value=False)
         self.ollama_model_var = tk.StringVar(value="llama3")
         self.ollama_url_var = tk.StringVar(value="http://localhost:11434/api/generate")
-        
+
         self.save_output_var = tk.BooleanVar(value=False)
         self.save_directory = tk.StringVar(value=str(Path.cwd() / "outputs"))
 
@@ -50,40 +43,20 @@ class AudioGuiApp:
     def _build_ui(self) -> None:
         padding = {"padx": 10, "pady": 5}
 
-        provider_frame = tk.LabelFrame(self.root, text="Transcription Provider")
-        provider_frame.pack(fill="x", **padding)
-
-        tk.Radiobutton(
-            provider_frame,
-            text="OpenAI Whisper",
-            variable=self.provider_var,
-            value="openai",
-        ).pack(anchor="w", padx=5, pady=2)
-        tk.Radiobutton(
-            provider_frame,
-            text="Local Whisper",
-            variable=self.provider_var,
-            value="whisper-local",
-        ).pack(anchor="w", padx=5, pady=2)
-
         model_frame = tk.LabelFrame(self.root, text="Model Settings")
         model_frame.pack(fill="x", **padding)
 
-        tk.Label(model_frame, text="OpenAI model:").grid(row=0, column=0, sticky="w")
-        tk.Entry(model_frame, textvariable=self.openai_model_var).grid(
+        tk.Label(model_frame, text="Whisper model:").grid(row=0, column=0, sticky="w")
+        tk.Entry(model_frame, textvariable=self.whisper_model_var).grid(
             row=0, column=1, sticky="ew", padx=5
         )
-        tk.Label(model_frame, text="Whisper model:").grid(row=1, column=0, sticky="w")
-        tk.Entry(model_frame, textvariable=self.whisper_model_var).grid(
+        tk.Label(model_frame, text="Tokenizer model:").grid(row=1, column=0, sticky="w")
+        tk.Entry(model_frame, textvariable=self.tokenizer_model_var).grid(
             row=1, column=1, sticky="ew", padx=5
         )
-        tk.Label(model_frame, text="Tokenizer model:").grid(row=2, column=0, sticky="w")
-        tk.Entry(model_frame, textvariable=self.tokenizer_model_var).grid(
-            row=2, column=1, sticky="ew", padx=5
-        )
-        tk.Label(model_frame, text="Encoding override:").grid(row=3, column=0, sticky="w")
+        tk.Label(model_frame, text="Encoding override:").grid(row=2, column=0, sticky="w")
         tk.Entry(model_frame, textvariable=self.encoding_var).grid(
-            row=3, column=1, sticky="ew", padx=5
+            row=2, column=1, sticky="ew", padx=5
         )
         model_frame.columnconfigure(1, weight=1)
 
@@ -224,7 +197,7 @@ class AudioGuiApp:
 
         if self.summarize_var.get():
             try:
-                summary = summarize_with_ollama( #take raw transcription text and summarize with local LLM (Ollama)
+                summary = summarize_with_ollama(
                     transcription.text,
                     model=self.ollama_model_var.get().strip() or None,
                     url=self.ollama_url_var.get().strip() or None,
@@ -236,7 +209,6 @@ class AudioGuiApp:
             else:
                 output_lines.append(f"Summary ({summary.model}):\n{summary.summary}")
                 output_lines.append(f"Answer: {summary.answer}")
-                pass
 
         for line in output_lines:
             print(line)
@@ -253,14 +225,8 @@ class AudioGuiApp:
         self._set_exit_enabled(True)
 
     def _build_transcriber(self) -> SpeechToTextService:
-        provider = self.provider_var.get()
-        if provider == "openai":
-            model = self.openai_model_var.get().strip() or None
-            return OpenAIWhisperTranscriber(model=model)
-        if provider == "whisper-local":
-            model_name = self.whisper_model_var.get().strip() or "base"
-            return WhisperLocalTranscriber(model_name=model_name)
-        raise ValueError(f"Unsupported provider: {provider}")
+        model_name = self.whisper_model_var.get().strip() or "base"
+        return WhisperLocalTranscriber(model_name=model_name)
 
     def _update_status(self, message: str) -> None:
         def setter() -> None:
@@ -294,7 +260,6 @@ class AudioGuiApp:
             self._persist_output(transcript_text, lines)
 
     def _persist_output(self, transcript_text: str, lines: list[str]) -> None:
-        """Write transcript and derived output to a timestamped text file."""
         directory = Path(self.save_directory.get()).expanduser()
         directory.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
