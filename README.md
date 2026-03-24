@@ -81,5 +81,3 @@ web/
   app.js
 ```
 
-### 6. Next Steps
-
